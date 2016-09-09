@@ -1,4 +1,4 @@
-package sprites;
+package clases;
 
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
@@ -8,7 +8,7 @@ import flixel.FlxG;
  * ...
  * @author ...
  */
-class Player extends FlxSprite
+class Navecita extends FlxSprite
 {
 
 	
@@ -58,7 +58,7 @@ class Player extends FlxSprite
 	}
 	public function Disparar()
 	{
-			var b:Balas = new Balas();//aca es donde se diria que el objeto es INSTANCIADO
+			var b:Bala = new Bala();//aca es donde se diria que el objeto es INSTANCIADO
 			b.x = x + width / 2;
 			b.y = y + height / 16;
 			

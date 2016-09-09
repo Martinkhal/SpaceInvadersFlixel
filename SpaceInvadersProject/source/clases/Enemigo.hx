@@ -1,10 +1,9 @@
-package sprites;
+package clases;
 
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
-import sprites.Enemigo;
-import sprites.Balas;
+import clases.Bala;
 /**
  * ...
  * @author ...

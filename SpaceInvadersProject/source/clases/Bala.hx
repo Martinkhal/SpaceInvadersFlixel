@@ -1,4 +1,4 @@
-package sprites;
+package clases;
 
 import flixel.FlxSprite;
 import flixel.animation.FlxAnimation;
