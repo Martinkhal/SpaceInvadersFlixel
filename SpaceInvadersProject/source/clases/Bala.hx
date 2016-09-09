@@ -21,15 +21,21 @@ class Bala extends FlxSprite
 		makeGraphic (2, 4);
 		color = FlxColor.WHITE;
 		velocity.y -= 500;
-	
 	}
-	
+	override public function reset(X:Float, Y:Float):Void 
+	{
+		super.reset(X, Y);
+		velocity.y -= 500;
+	}
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
 		
-		if (x > FlxG.width || x < 0)
-		destroy();
+		if (StageTools.FueraDePantalla(getPosition()))
+		{
+			trace("ded x.X");
+			kill();
+		}		
 	}
 	
 }
