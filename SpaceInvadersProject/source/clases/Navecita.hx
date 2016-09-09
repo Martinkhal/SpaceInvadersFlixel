@@ -11,7 +11,7 @@ import flixel.FlxG;
 class Navecita extends FlxSprite
 {
 
-	var b:Bala = new Bala(); 
+	public var b:Bala = new Bala(); 
 	
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{

@@ -9,6 +9,7 @@ import flixel.math.FlxMath;
 import clases.Navecita;
 import clases.Enemigo;
 import clases.Bala;
+import flixel.util.FlxCollision;
 
 class PlayState extends FlxState
 {
@@ -36,15 +37,15 @@ class PlayState extends FlxState
 		
 		timer += elapsed;
 		
-		if (timer >= 3)
+		if (timer >= 1)
 		{
-			trace("hola");
+			enemigo.move(10);
 			timer = 0;
 		}
 		
-		
-		
-		
-		
+		if (enemigo.overlapsPoint(player.b.getPosition()))
+		{
+			trace("AAAAAAAAAAAAAAAAAAAAAA");
+		}		
 	}
 }

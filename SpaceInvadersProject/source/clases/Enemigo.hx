@@ -9,9 +9,7 @@ import clases.Bala;
  * @author ...
  */
 class Enemigo extends FlxSprite
-{
-
-	
+{	
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
 	{
 		super(X, Y, SimpleGraphic);
@@ -25,8 +23,11 @@ class Enemigo extends FlxSprite
 	
 	override public function update (elapsed:Float):Void
 	{
-		super.update(elapsed);
-		
-
+		super.update(elapsed);	
+	}
+	
+	public function move(movement:Float)
+	{
+		x += movement;
 	}
 }
