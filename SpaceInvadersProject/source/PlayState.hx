@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.math.FlxMath;
@@ -13,22 +14,24 @@ import flixel.util.FlxCollision;
 
 class PlayState extends FlxState
 {
-	private var enemigo: Enemigo; 
+	private var enemigos: FlxGroup = new FlxGroup(); 
 	private var player:Navecita;
 	private var timer:Float = 0;
-	
+
 	override public function create():Void
 	{
 		super.create();
-		
-		enemigo = new Enemigo(300, 30); //posicion donde aparece ENEMIGO
-		enemigo.velocity.x = 100;
-		enemigo.velocity.x -= 100;
-		
+
 		player = new Navecita(300, 440); //posicion donde aparece NAVE del jugador
-		
 		add(player);
-		add(enemigo);
+		var e:Enemigo;
+		for (i in 0...5)
+		{
+			e = new Enemigo(20 + i*50, 30);
+			
+			enemigos.add(e);
+		}		
+		add(enemigos);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -39,13 +42,10 @@ class PlayState extends FlxState
 		
 		if (timer >= 1)
 		{
-			enemigo.move(10);
+			//enemigo.move(10);
 			timer = 0;
 		}
 		
-		if (enemigo.overlapsPoint(player.b.getPosition()))
-		{
-			trace("AAAAAAAAAAAAAAAAAAAAAA");
-		}		
+		//enemigos.colisionarConBala(player.b.getPosition());	
 	}
 }

@@ -10,10 +10,9 @@ import clases.Bala;
  */
 class Enemigo extends FlxSprite
 {	
-	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
+	public function new(?X:Float=0, ?Y:Float=0) 
 	{
-		super(X, Y, SimpleGraphic);
-		
+		super(X, Y);		
 		//PARA CREAR ENEMIGO/imagen
 		loadGraphic(AssetPaths.enemigo1__png); //para cargar la direccion de una imagen y usarla
 		//makeGraphic(64, 64, 0xFFFFFF00);
