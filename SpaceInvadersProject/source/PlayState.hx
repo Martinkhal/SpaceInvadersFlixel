@@ -1,5 +1,6 @@
 package;
 
+import clases.Enjambre;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -14,7 +15,7 @@ import flixel.util.FlxCollision;
 
 class PlayState extends FlxState
 {
-	private var enemigos: FlxGroup = new FlxGroup(); 
+	private var enemigos:Enjambre; 
 	private var player:Navecita;
 	private var timer:Float = 0;
 
@@ -24,14 +25,8 @@ class PlayState extends FlxState
 
 		player = new Navecita(300, 440); //posicion donde aparece NAVE del jugador
 		add(player);
-		var e:Enemigo;
-		for (i in 0...5)
-		{
-			e = new Enemigo(20 + i*50, 30);
-			
-			enemigos.add(e);
-		}		
-		add(enemigos);
+		enemigos = new Enjambre();
+		enemigos.add();
 	}
 
 	override public function update(elapsed:Float):Void
