@@ -38,7 +38,12 @@ class PlayState extends FlxState
 		if (timer >= 1)
 		{
 			//enemigo.move(10);
+			enemigos.checkAliveColumns();
 			timer = 0;
+		}
+		if (enemigos.checkAgainstBullet(player.b.getPosition()))
+		{
+			player.b.kill();
 		}
 		
 		//enemigos.colisionarConBala(player.b.getPosition());	

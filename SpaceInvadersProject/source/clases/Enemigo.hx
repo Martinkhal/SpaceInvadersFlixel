@@ -1,6 +1,7 @@
 package clases;
 
 import flixel.FlxSprite;
+import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 import clases.Bala;
@@ -28,5 +29,19 @@ class Enemigo extends FlxSprite
 	public function move(movement:Float)
 	{
 		x += movement;
+	}
+	public function checkAgainstBullet(point:FlxPoint):Bool
+	{
+		if (!alive)
+		{
+			return false;
+		}
+		if (overlapsPoint(point))
+		{
+			kill();
+			return true;
+		}else{
+			return false;
+		}
 	}
 }
