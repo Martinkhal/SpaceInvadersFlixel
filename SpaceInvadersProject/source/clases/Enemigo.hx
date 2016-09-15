@@ -26,9 +26,10 @@ class Enemigo extends FlxSprite
 		super.update(elapsed);	
 	}
 	
-	public function move(movement:Float)
+	public function move(movement:FlxPoint)
 	{
-		x += movement;
+		x += movement.x;
+		y += movement.y;
 	}
 	public function checkAgainstBullet(point:FlxPoint):Bool
 	{

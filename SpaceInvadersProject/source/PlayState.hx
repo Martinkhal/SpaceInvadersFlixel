@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
+import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.math.FlxMath;
@@ -35,10 +36,11 @@ class PlayState extends FlxState
 		
 		timer += elapsed;
 		
-		if (timer >= 1)
+		if (timer >= 0.1)
 		{
 			//enemigo.move(10);
 			//enemigos.checkAliveColumns();
+			enemigos.Move(new FlxPoint(10, 0));
 			enemigos.checkLeftMost();
 			timer = 0;
 		}

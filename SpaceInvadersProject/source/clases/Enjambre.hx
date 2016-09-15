@@ -11,8 +11,11 @@ import flixel.math.FlxPoint;
 class Enjambre
 {
 	private var enemigos: FlxGroup = new FlxGroup(); 
-	var enjambreWidth:Int = 8;
+	var enjambreWidth:Int = 11;
 	var enjambreHeight:Int = 4;
+	
+	public var currentMovingEnemy:Int;
+	
 	public function new() 
 	{
 		
@@ -24,9 +27,29 @@ class Enjambre
 				e = new Enemigo(20 + i*50, 30+ j*50);				
 				enemigos.add(e);
 			}
-		}				
+		}	
+		currentMovingEnemy = enjambreHeight * enjambreWidth - 1;
+		trace(cast(enemigos.members[currentMovingEnemy-1], Enemigo).alive);
 	}	
 	
+	public function Move(movement:FlxPoint)
+	{
+		/*
+		for (i in 0...enjambreWidth*enjambreHeight)
+		{
+			if (enemigos.members[i].alive)
+			{
+				cast(enemigos.members[i], Enemigo).move(movement);				
+			}
+		}
+		*/		
+		cast(enemigos.members[currentMovingEnemy], Enemigo).move(movement);
+		currentMovingEnemy --;
+		if (currentMovingEnemy < 0)
+		{
+			currentMovingEnemy = enjambreHeight * enjambreWidth - 1;
+		}
+	}
 	
 	public function add()
 	{		
@@ -59,8 +82,8 @@ class Enjambre
 		trace(leftMost);
 	}
 	
-	public function checkAliveColumns()
-	{
+	//Ya no anda
+	public function checkAliveColumns(){
 		var s:String = "";
 		for (i in 0...enjambreWidth)
 		{
@@ -73,9 +96,8 @@ class Enjambre
 		}
 		trace(s);
 	}
-	
-	public function checkColumn(column:Int):Bool
-	{
+	//Ya no anda
+	public function checkColumn(column:Int):Bool{
 		for (i in 0...enjambreHeight)
 		{
 			if (enemigos.members[i * enjambreWidth + column].alive)
