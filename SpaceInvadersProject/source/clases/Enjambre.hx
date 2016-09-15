@@ -17,11 +17,11 @@ class Enjambre
 	{
 		
 		var e:Enemigo;			
-		for (i in 0...enjambreHeight)
+		for (i in 0...enjambreWidth)
 		{
-			for (j in 0...enjambreWidth)
+			for (j in 0...enjambreHeight)
 			{
-				e = new Enemigo(20 + j*50, 30+ i*50);				
+				e = new Enemigo(20 + i*50, 30+ j*50);				
 				enemigos.add(e);
 			}
 		}				
@@ -31,6 +31,32 @@ class Enjambre
 	public function add()
 	{		
 		FlxG.state.add(enemigos);
+	}
+	public function checkRightMost()
+	{
+		var rightMost:Int = 0;
+		for (i in 0...enjambreWidth*enjambreHeight)
+		{
+			if (enemigos.members[i].alive)
+			{
+				rightMost = i;				
+			}
+		}
+		trace(rightMost);
+	}
+	
+	public function checkLeftMost()
+	{
+		var leftMost:Int = 0;
+		for (i in 0...enjambreWidth*enjambreHeight)
+		{
+			if (enemigos.members[i].alive)
+			{
+				leftMost = i;
+				break;
+			}
+		}
+		trace(leftMost);
 	}
 	
 	public function checkAliveColumns()
