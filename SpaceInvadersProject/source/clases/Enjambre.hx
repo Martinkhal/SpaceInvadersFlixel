@@ -274,19 +274,21 @@ class Enjambre
 		return false;
 	}
 	
-	public function CollideBulletsWithPlayerBullet():Bool {
-		var i:Int = BalasEnemigas.length-1;
-		while (i >= 0) {
-			if (BalasEnemigas[i].exists)
-			{				
-				if (BalasEnemigas[i].CollidePoint(player.b.getPosition()))
-				{
-					player.b.explode();
-					return true;
+	public function CollideBulletsWithPlayerBullet():Bool {		
+		if (player.b.alive){
+			var i:Int = BalasEnemigas.length - 1;
+			while (i >= 0) {
+				if (BalasEnemigas[i].exists)
+				{				
+					if (BalasEnemigas[i].CollidePoint(player.b.getPosition()))
+					{
+						player.b.explode();
+						return true;
+					}
 				}
-			}
-			i--;
-		}
+				i--;
+			}	
+		}		
 		return false;
 	}
 }
