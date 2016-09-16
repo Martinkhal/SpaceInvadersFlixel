@@ -2,6 +2,7 @@ package clases;
 
 import flixel.FlxSprite;
 import flixel.animation.FlxAnimation;
+import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.animation.FlxAnimation;
 import flixel.FlxG;
@@ -54,7 +55,8 @@ class Bala extends FlxSprite
 		{
 			return false;
 		}
-		if (overlapsPoint(point))
+		
+		if (overlapsPointExpanded(point))
 		{
 			explode();
 			return true;
@@ -62,5 +64,12 @@ class Bala extends FlxSprite
 			return false;
 		}
 	}
-	
+	public function overlapsPointExpanded(point:FlxPoint):Bool
+	{		
+		if (point.x > x - 10 && point.x < x + 10 && point.y < y + 10 && point.y > y - 10) 
+		{
+			return true;
+		}
+		return false;
+	}
 }
