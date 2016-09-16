@@ -1,6 +1,7 @@
 package clases;
 
 import flixel.FlxSprite;
+import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 
@@ -59,6 +60,22 @@ class Navecita extends FlxSprite
 		{			
 			b.reset(x + width / 2, y + height / 16);
 			FlxG.state.add(b);		
+		}
+	}
+	
+	public function CollidePoint(point:FlxPoint):Bool
+	{
+		if (!alive)
+		{
+			return false;
+		}
+		if (overlapsPoint(point))
+		{
+			kill();
+			//die();
+			return true;
+		}else{
+			return false;
 		}
 	}
 }

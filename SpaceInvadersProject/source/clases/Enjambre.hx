@@ -18,9 +18,12 @@ class Enjambre
 	
 	public var stageLeft:Float = 80;
 	public var stageRight:Float = 550;
-	public function new() 
-	{
-		
+	
+	private var player:Navecita;
+	
+	public function new(Player:Navecita) 
+	{		
+		player = Player;
 		var e:Enemigo;			
 		for (i in 0...enjambreWidth)
 		{
@@ -150,14 +153,139 @@ class Enjambre
 		return false;
 	}
 	
-	public function checkAgainstBullet(point:FlxPoint):Bool
+	public function CollidePoint(point:FlxPoint):Bool
 	{
 		for (i in 0...enjambreHeight*enjambreWidth)
 		{
-			if (cast(enemigos.members[i], Enemigo).checkAgainstBullet(point))
+			if (cast(enemigos.members[i], Enemigo).CollidePoint(point))
 			{
 				return true;
 			}
+		}
+		return false;
+	}
+	
+	public function ResetPosition()
+	{
+		var index:Int = 0;			
+		for (i in 0...enjambreWidth)
+		{
+			for (j in 0...enjambreHeight)
+			{
+				(cast(enemigos.members[index], Enemigo)).setPosition(80 + i * 40, 30 + j * 35);
+				index++;
+			}
+		}
+		currentMovingEnemy = 1;
+		deleteAllBullets();
+	}
+	
+	public function AliveArray():Array<Enemigo>
+	{
+		var a:Array<Enemigo> = [];
+		
+		for(i in 0...enemigos.length) 
+		{
+			if (enemigos.members[i].alive) {
+					a.push(cast(enemigos.members[i], Enemigo));
+			}
+		}
+		return a;
+	}
+	
+	private var BalasEnemigas:Array<Bala> = [];
+	public function fire()
+	{
+		BalasEnemigas.push(fireRandom());		
+		var i:Int = BalasEnemigas.length-1;
+		while (i >= 0) {
+			if (!BalasEnemigas[i].exists)
+			{
+				BalasEnemigas.splice(i, 1);
+				trace("Removed: "+i);
+			}
+			i--;
+		}
+		trace(BalasEnemigas.length);		
+	}
+
+	public function deleteAllBullets()
+	{		
+		var l:Int = BalasEnemigas.length;
+		for (i in 0...l) {
+			if (BalasEnemigas[i].exists)
+			{
+				BalasEnemigas[i].destroy();
+			}
+		}
+		BalasEnemigas = [];
+	}
+	public function fireRandom():Bala
+	{			
+		var a:Array<Enemigo> = AliveArray();
+		return (cast(a[Math.floor(Math.random() * (enemigos.countLiving()))], Enemigo)).Disparar();		
+	}
+	
+	private var currentMovement:FlxPoint = new FlxPoint(15,0);
+	private var movementH:Float = 15;
+	private var movementV:Float = 30;
+	
+	public function StartMove() {
+		if (Move(currentMovement))
+		{			
+			var dir:Int = checkWall();
+			if (dir != 0)
+			{
+				currentMovement = new FlxPoint(movementH * dir,movementV);
+			}else{
+				currentMovement =  new FlxPoint(currentMovement.x,0);
+			}					
+		}
+	}
+	private var MoveTimer:Float = 0;
+	private var FireTimer:Float = 0;
+	public function Update(elapsed:Float) {
+		MoveTimer += elapsed;		
+		if (MoveTimer >= 0.05)
+		{
+			StartMove();				
+			MoveTimer = 0;
+		}
+		FireTimer -= elapsed;		
+		if (FireTimer <= 0)
+		{							
+			fire();			
+			FireTimer = 0.4 + Math.random() * 0.5;
+		}
+		//CollideBulletsWithPlayer();
+	}
+	public function CollideBulletsWithPlayer():Bool {
+		var i:Int = BalasEnemigas.length-1;
+		while (i >= 0) {
+			if (BalasEnemigas[i].exists)
+			{
+				if (player.CollidePoint(BalasEnemigas[i].getPosition()))
+				{
+					return true;
+				}
+			}
+			i--;
+		}
+		return false;
+	}
+	
+	public function CollideBulletsWithPlayerBullet():Bool {
+		var i:Int = BalasEnemigas.length-1;
+		while (i >= 0) {
+			if (BalasEnemigas[i].exists)
+			{				
+				if (BalasEnemigas[i].CollidePoint(player.b.getPosition()))
+				{
+					player.b.explode();
+					return true;
+				}
+			}
+			i--;
 		}
 		return false;
 	}

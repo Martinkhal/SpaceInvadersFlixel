@@ -31,7 +31,7 @@ class Enemigo extends FlxSprite
 		x += movement.x;
 		y += movement.y;
 	}
-	public function checkAgainstBullet(point:FlxPoint):Bool
+	public function CollidePoint(point:FlxPoint):Bool
 	{
 		if (!alive)
 		{
@@ -39,10 +39,22 @@ class Enemigo extends FlxSprite
 		}
 		if (overlapsPoint(point))
 		{
-			kill();
+			die();
 			return true;
 		}else{
 			return false;
 		}
 	}
+	public function die()
+	{
+		kill();
+	}
+	public function Disparar():Bala
+	{
+		var b:Bala = new Bala(x + width / 2, y + height , true, 200); 		
+		FlxG.state.add(b);			
+		return b;
+	}
+	
+	
 }

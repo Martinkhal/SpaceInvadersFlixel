@@ -1,6 +1,7 @@
 package;
 
 import clases.Enjambre;
+import clases.UFO;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -16,50 +17,61 @@ import flixel.util.FlxCollision;
 
 class PlayState extends FlxState
 {
-	private var enemigos:Enjambre; 
+	private var enjambre:Enjambre; 
 	private var player:Navecita;
-	private var timer:Float = 0;
-
+	private var ufo:UFO;
+	
 	override public function create():Void
 	{
+		
 		super.create();
 
 		player = new Navecita(300, 440); //posicion donde aparece NAVE del jugador
 		add(player);
-		enemigos = new Enjambre();
-		enemigos.add();
-	}
-	private var currentMovement:FlxPoint = new FlxPoint(5,0);
-	private var movementH:Float = 5;
-	private var movementV:Float = 10;
+		enjambre = new Enjambre(player);
+		enjambre.add();
+		ufo = new UFO();
+		add(ufo);
+	}	
+	
 	override public function update(elapsed:Float):Void
 	{
+		
 		super.update(elapsed);
 		
-		if(!enemigos.Erradicated()){
-			timer += elapsed;		
-			if (timer >= 0.015)
-			{			
-				
-				if (enemigos.Move(currentMovement))
-				{
-					
-					var dir:Int = enemigos.checkWall();
-					if (dir != 0)
-					{
-						currentMovement = new FlxPoint(movementH * dir,movementV);
-					}else{
-						currentMovement =  new FlxPoint(currentMovement.x,0);
-					}					
-				}
-				enemigos.LeftMostIndex();
-				
-				timer = 0;
-			}
-			if (player.b.alive && enemigos.checkAgainstBullet(player.b.getPosition()))
+		
+		if (!enjambre.Erradicated()) {
+			
+			enjambre.Update(elapsed);			
+			
+			if (player.b.alive && enjambre.CollidePoint(player.b.getPosition()))
 			{
 				player.b.kill();
 			}
+			
+			if (player.alive && enjambre.CollidePoint(player.getPosition()))
+			{
+				//player.kill();
+				enjambre.ResetPosition();
+			}
+			if (player.alive && enjambre.CollidePoint(player.getPosition()))
+			{
+				//player.kill();
+				enjambre.ResetPosition();
+			}
+			
+			if (player.alive && enjambre.CollidePoint(player.getPosition()))
+			{
+				//player.kill();
+				enjambre.ResetPosition();
+			}
+			if (enjambre.CollideBulletsWithPlayer())
+			{
+				enjambre.ResetPosition();
+				player.revive();
+			}
+			enjambre.CollideBulletsWithPlayerBullet();
+			if (FlxG.keys.pressed.F) enjambre.ResetPosition();
 			
 		}else{
 			FlxG.switchState(new MenuState());

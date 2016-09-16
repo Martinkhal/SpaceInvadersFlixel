@@ -6,21 +6,23 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.animation.FlxAnimation;
 import flixel.FlxG;
 import flixel.util.FlxColor;
-
+import flixel.math.FlxPoint;
 /**
  * ...
  * @author ...
  */
 class Bala extends FlxSprite
 {
-
-	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
+	private var selfDestroy:Bool;
+	public function new(?X:Float=0, ?Y:Float=0,?SelfDestroy:Bool=false, ?Velocity:Int=-500) 
 	{
-		super(X, Y, SimpleGraphic);
+		super(X, Y);
 		
-		makeGraphic (2, 4);
+		makeGraphic (4, 8);
 		color = FlxColor.WHITE;
-		velocity.y -= 500;
+		velocity.y = Velocity;
+		
+		selfDestroy = SelfDestroy;
 	}
 	override public function reset(X:Float, Y:Float):Void 
 	{
@@ -33,9 +35,32 @@ class Bala extends FlxSprite
 		
 		if (StageTools.FueraDePantalla(getPosition()))
 		{
-			trace("ded x.X");
-			kill();
+			explode();
 		}		
+	}
+	public function explode()
+	{
+		if (selfDestroy) {
+				trace("BOOM");
+				destroy();
+			}else {
+				trace("ded x.X");
+				kill();
+			}
+	}
+	public function CollidePoint(point:FlxPoint):Bool
+	{
+		if (!alive)
+		{
+			return false;
+		}
+		if (overlapsPoint(point))
+		{
+			explode();
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 }
