@@ -17,7 +17,7 @@ class Navecita extends FlxSprite
 	{
 		super(X, Y);		
 		loadGraphic(AssetPaths.navejugador__png);
-		setGraphicSize(45, 45);
+		setGraphicSize(32, 32);
 		b.kill();
 	}
 	

@@ -17,7 +17,7 @@ class Enemigo extends FlxSprite
 		//PARA CREAR ENEMIGO/imagen
 		loadGraphic(AssetPaths.enemigo1__png); //para cargar la direccion de una imagen y usarla
 		//makeGraphic(64, 64, 0xFFFFFF00);
-		setGraphicSize(30, 30); //tamaño de la imagen
+		setGraphicSize(32, 32); //tamaño de la imagen
 		
 	}
 	
