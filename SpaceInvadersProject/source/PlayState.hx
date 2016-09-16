@@ -29,27 +29,42 @@ class PlayState extends FlxState
 		enemigos = new Enjambre();
 		enemigos.add();
 	}
-	private var movement:Float = 10;
+	private var currentMovement:FlxPoint = new FlxPoint(5,0);
+	private var movementH:Float = 5;
+	private var movementV:Float = 10;
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
 		
-		timer += elapsed;
-		
-		if (timer >= 0.03)
-		{			
-			if (enemigos.Move(new FlxPoint(movement, 0)))
-			{
-				trace("End Of Cicle");
+		if(!enemigos.Erradicated()){
+			timer += elapsed;		
+			if (timer >= 0.015)
+			{			
+				
+				if (enemigos.Move(currentMovement))
+				{
+					
+					var dir:Int = enemigos.checkWall();
+					if (dir != 0)
+					{
+						currentMovement = new FlxPoint(movementH * dir,movementV);
+					}else{
+						currentMovement =  new FlxPoint(currentMovement.x,0);
+					}					
+				}
+				enemigos.LeftMostIndex();
+				
+				timer = 0;
 			}
-			enemigos.LeftMostIndex();
+			if (player.b.alive && enemigos.checkAgainstBullet(player.b.getPosition()))
+			{
+				player.b.kill();
+			}
 			
-			timer = 0;
+		}else{
+			FlxG.switchState(new MenuState());
 		}
-		if (enemigos.checkAgainstBullet(player.b.getPosition()))
-		{
-			player.b.kill();
-		}
+		
 		
 		//enemigos.colisionarConBala(player.b.getPosition());	
 	}

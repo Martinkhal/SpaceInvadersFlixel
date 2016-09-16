@@ -16,6 +16,8 @@ class Enjambre
 	
 	public var currentMovingEnemy:Int;
 	
+	public var stageLeft:Float = 80;
+	public var stageRight:Float = 550;
 	public function new() 
 	{
 		
@@ -24,14 +26,17 @@ class Enjambre
 		{
 			for (j in 0...enjambreHeight)
 			{
-				e = new Enemigo(20 + i*50, 30+ j*50);				
+				e = new Enemigo(80 + i*40, 30+ j*35);				
 				enemigos.add(e);
 			}
 		}	
 		currentMovingEnemy = 1;
 		//trace(cast(enemigos.members[currentMovingEnemy-1], Enemigo).alive);
 	}	
-	
+	public function Erradicated():Bool
+	{
+		return (enemigos.countLiving() == 0);
+	}
 	public function Move(movement:FlxPoint):Bool
 	{
 		var endOfCicle:Bool = false;	
@@ -39,28 +44,27 @@ class Enjambre
 		{			
 			while (!cast(enemigos.members[FromBottomLeft(currentMovingEnemy)], Enemigo).alive)
 			{
-				currentMovingEnemy = nextIndex(currentMovingEnemy);
+				endOfCicle = nextIndex(currentMovingEnemy) || endOfCicle;
 			}
 			
 			cast(enemigos.members[FromBottomLeft(currentMovingEnemy)], Enemigo).move(movement);
-			currentMovingEnemy ++;
-			if (currentMovingEnemy > enjambreHeight * enjambreWidth)
-			{
-				currentMovingEnemy = 1;
-			}
+			endOfCicle = nextIndex(currentMovingEnemy) || endOfCicle;
 		}
 		return endOfCicle;
 	}
-	public function nextIndex(index:Int):Int{
-		index++;
-		if (index > enjambreHeight * enjambreWidth)
+	public function nextIndex(index:Int):Bool{
+		var endOfCicle:Bool = false;	
+		currentMovingEnemy++;
+		if (currentMovingEnemy > enjambreHeight * enjambreWidth)
 		{
-			index = 1;
+			endOfCicle = true;
+			currentMovingEnemy = 1;
 		}
-		if (index < 1){
-			index = 1;
+		if (currentMovingEnemy < 1){
+			endOfCicle = true;
+			currentMovingEnemy = 1;
 		}
-		return index;
+		return endOfCicle;
 	}
 	
 	public function FromBottomLeft(index:Int):Int
@@ -81,15 +85,16 @@ class Enjambre
 	{
 		var rightMost:Int = RightMostIndex();
 		var leftMost:Int = LeftMostIndex();
-		if (StageTools.FueraDePantalla(cast(enemigos.members[rightMost], Enemigo).getPosition()))
+		trace("Right: " +(cast(enemigos.members[rightMost], Enemigo).getPosition()));
+		trace("Left: " +(cast(enemigos.members[leftMost], Enemigo).getPosition()));
+		if ((cast(enemigos.members[rightMost], Enemigo).getPosition().x) > stageRight)
 		{
 			return -1;
 		}
-		if (rightMost != leftMost){
-			if (StageTools.FueraDePantalla(cast(enemigos.members[leftMost], Enemigo).getPosition()))
-			{
-				return 1;
-			}
+	
+		if ((cast(enemigos.members[leftMost], Enemigo).getPosition().x) < stageLeft)
+		{
+			return 1;
 		}
 		return 0;
 	}
