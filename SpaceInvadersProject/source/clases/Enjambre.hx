@@ -12,7 +12,7 @@ class Enjambre
 {
 	private var enemigos: FlxGroup = new FlxGroup(); 
 	var enjambreWidth:Int = 11;
-	var enjambreHeight:Int = 4;
+	var enjambreHeight:Int = 6;
 	
 	public var currentMovingEnemy:Int;
 	
@@ -28,34 +28,73 @@ class Enjambre
 				enemigos.add(e);
 			}
 		}	
-		currentMovingEnemy = enjambreHeight * enjambreWidth - 1;
-		trace(cast(enemigos.members[currentMovingEnemy-1], Enemigo).alive);
+		currentMovingEnemy = 1;
+		//trace(cast(enemigos.members[currentMovingEnemy-1], Enemigo).alive);
 	}	
 	
-	public function Move(movement:FlxPoint)
+	public function Move(movement:FlxPoint):Bool
 	{
-		/*
-		for (i in 0...enjambreWidth*enjambreHeight)
-		{
-			if (enemigos.members[i].alive)
+		var endOfCicle:Bool = false;	
+		if (enemigos.length>0)
+		{			
+			while (!cast(enemigos.members[FromBottomLeft(currentMovingEnemy)], Enemigo).alive)
 			{
-				cast(enemigos.members[i], Enemigo).move(movement);				
+				currentMovingEnemy = nextIndex(currentMovingEnemy);
+			}
+			
+			cast(enemigos.members[FromBottomLeft(currentMovingEnemy)], Enemigo).move(movement);
+			currentMovingEnemy ++;
+			if (currentMovingEnemy > enjambreHeight * enjambreWidth)
+			{
+				currentMovingEnemy = 1;
 			}
 		}
-		*/		
-		cast(enemigos.members[currentMovingEnemy], Enemigo).move(movement);
-		currentMovingEnemy --;
-		if (currentMovingEnemy < 0)
+		return endOfCicle;
+	}
+	public function nextIndex(index:Int):Int{
+		index++;
+		if (index > enjambreHeight * enjambreWidth)
 		{
-			currentMovingEnemy = enjambreHeight * enjambreWidth - 1;
+			index = 1;
 		}
+		if (index < 1){
+			index = 1;
+		}
+		return index;
+	}
+	
+	public function FromBottomLeft(index:Int):Int
+	{		
+		var x:Int = ((index-1) % enjambreWidth) +1;
+		var y:Int = Math.ceil(index / enjambreWidth);
+		
+		//trace("Index:" + index + ", x:" + x + ", y:" + y + ", Value:" + ((x * enjambreHeight) - y));
+		return ((x * enjambreHeight) - y);
 	}
 	
 	public function add()
 	{		
 		FlxG.state.add(enemigos);
 	}
-	public function checkRightMost()
+	
+	public function checkWall():Int
+	{
+		var rightMost:Int = RightMostIndex();
+		var leftMost:Int = LeftMostIndex();
+		if (StageTools.FueraDePantalla(cast(enemigos.members[rightMost], Enemigo).getPosition()))
+		{
+			return -1;
+		}
+		if (rightMost != leftMost){
+			if (StageTools.FueraDePantalla(cast(enemigos.members[leftMost], Enemigo).getPosition()))
+			{
+				return 1;
+			}
+		}
+		return 0;
+	}
+	
+	public function RightMostIndex():Int
 	{
 		var rightMost:Int = 0;
 		for (i in 0...enjambreWidth*enjambreHeight)
@@ -65,21 +104,19 @@ class Enjambre
 				rightMost = i;				
 			}
 		}
-		trace(rightMost);
+		return rightMost;
 	}
 	
-	public function checkLeftMost()
+	public function LeftMostIndex():Int
 	{
-		var leftMost:Int = 0;
 		for (i in 0...enjambreWidth*enjambreHeight)
 		{
 			if (enemigos.members[i].alive)
 			{
-				leftMost = i;
-				break;
+				return i;
 			}
 		}
-		trace(leftMost);
+		return 0;
 	}
 	
 	//Ya no anda

@@ -29,19 +29,21 @@ class PlayState extends FlxState
 		enemigos = new Enjambre();
 		enemigos.add();
 	}
-
+	private var movement:Float = 10;
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
 		
 		timer += elapsed;
 		
-		if (timer >= 0.1)
-		{
-			//enemigo.move(10);
-			//enemigos.checkAliveColumns();
-			enemigos.Move(new FlxPoint(10, 0));
-			enemigos.checkLeftMost();
+		if (timer >= 0.03)
+		{			
+			if (enemigos.Move(new FlxPoint(movement, 0)))
+			{
+				trace("End Of Cicle");
+			}
+			enemigos.LeftMostIndex();
+			
 			timer = 0;
 		}
 		if (enemigos.checkAgainstBullet(player.b.getPosition()))
