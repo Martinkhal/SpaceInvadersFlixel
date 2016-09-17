@@ -2,6 +2,7 @@ package clases;
 
 import flixel.FlxSprite;
 import flixel.animation.FlxAnimation;
+import flixel.input.FlxAccelerometer;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.animation.FlxAnimation;
@@ -15,30 +16,54 @@ import flixel.math.FlxPoint;
 class Bala extends FlxSprite
 {
 	private var selfDestroy:Bool;
+	private var vy:Float;
+	private var prevPositionY:Float;
 	public function new(?X:Float=0, ?Y:Float=0,?SelfDestroy:Bool=false, ?Velocity:Int=-500) 
 	{
 		super(X, Y);
 		
 		makeGraphic (4, 8);
 		color = FlxColor.WHITE;
-		velocity.y = Velocity;
-		
+		vy = Velocity;
+		prevPositionY = y;
+		//graphic.bitmap.setPixel(0, 0, 0);
 		selfDestroy = SelfDestroy;
 	}
 	override public function reset(X:Float, Y:Float):Void 
 	{
 		super.reset(X, Y);
-		velocity.y -= 500;
 	}
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
-		
+		prevPositionY = y;
+		y += vy*elapsed;
 		if (StageTools.FueraDePantalla(getPosition()))
 		{
 			explode();
 		}		
 	}
+	public function pointsDuringFrame():Array<FlxPoint>
+	{
+		var points:Array<FlxPoint> = [];
+		var from:Int = Math.floor(prevPositionY);
+		var to:Int = Math.floor(y);
+		if (from != to)
+		{
+			if (to < from){
+				from = to;
+				to = Math.floor(prevPositionY);
+			}
+			for (i in from...to)
+			{
+				points.push(new FlxPoint(x,i));
+			}
+		}else{
+			points.push(getPosition());			
+		}
+		return(points);
+	}
+	
 	public function explode()
 	{
 		if (selfDestroy) {
