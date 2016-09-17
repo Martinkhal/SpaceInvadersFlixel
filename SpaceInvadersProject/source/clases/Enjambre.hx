@@ -20,10 +20,11 @@ class Enjambre
 	public var stageRight:Float = 550;
 	
 	private var player:Navecita;
-	
-	public function new(Player:Navecita) 
+	private var escudo:Shield;
+	public function new(Player:Navecita,Escudo:Shield) 
 	{		
 		player = Player;
+		escudo = Escudo;
 		var e:Enemigo;			
 		for (i in 0...enjambreWidth)
 		{
@@ -125,33 +126,8 @@ class Enjambre
 			}
 		}
 		return 0;
-	}
-	
-	//Ya no anda
-	public function checkAliveColumns(){
-		var s:String = "";
-		for (i in 0...enjambreWidth)
-		{
-			if (checkColumn(i))
-			{
-				s += "1";
-			}else{
-				s += "0";
-			}
-		}
-		trace(s);
-	}
-	//Ya no anda
-	public function checkColumn(column:Int):Bool{
-		for (i in 0...enjambreHeight)
-		{
-			if (enemigos.members[i * enjambreWidth + column].alive)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+	}	
+
 	
 	public function CollidePoint(point:FlxPoint):Bool
 	{
@@ -194,6 +170,7 @@ class Enjambre
 	}
 	
 	private var BalasEnemigas:Array<Bala> = [];
+	
 	public function fire()
 	{
 		BalasEnemigas.push(fireRandom());		
@@ -289,6 +266,22 @@ class Enjambre
 				i--;
 			}	
 		}		
+		return false;
+	}
+	
+	public function CollideBulletsWithShield():Bool {
+		var i:Int = BalasEnemigas.length-1;
+		while (i >= 0) {
+			if (BalasEnemigas[i].exists)
+			{
+				if (escudo.CollidePoints(BalasEnemigas[i].pointsDuringFrame()))
+				{
+					BalasEnemigas[i].explode();
+					return true;
+				}
+			}
+			i--;
+		}
 		return false;
 	}
 }
