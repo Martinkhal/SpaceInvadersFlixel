@@ -11,11 +11,13 @@ import flixel.FlxG;
 class UFO extends FlxSprite
 {
 	public var player:Navecita;
-	public function new(?X:Float=100, ?Y:Float=10, Player:Navecita) 
+	public function new(?X:Float=0, ?Y:Float=0, Player:Navecita) 
 	{
 		super(X, Y);		
-		loadGraphic(AssetPaths.navejugador__png);
-		setGraphicSize(32, 32);
+		loadGraphic(AssetPaths.UFO__png, true, 17, 15);		
+		animation.add("moving", [0, 1], 12,true);		
+		animation.play("moving");
+		setGraphicSize(17, 15);
 		set_visible(false);
 		player = Player;
 	}
@@ -26,15 +28,14 @@ class UFO extends FlxSprite
 	{	
 		if (!visible)
 		{
-			trace("UFO:"+spawnCooldown);
+			
 			super.update(elapsed);
 			spawnCooldown -= elapsed;
 			if (spawnCooldown<0) {
 				spawn();
 				spawnCooldown = spawnTime;				
 			}
-		}else {		
-			
+		}else {					
 			if (player.b.alive){
 				if (CollidePoint(player.b.getPosition()))
 				{
@@ -42,8 +43,7 @@ class UFO extends FlxSprite
 				}
 			}			
 			x -= elapsed*50;
-			if (x < 0) {
-				trace("UFO DOWN");
+			if (x+width < 0) {				
 				set_visible(false);			
 			}			
 		}		
