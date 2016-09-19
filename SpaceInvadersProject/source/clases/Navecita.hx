@@ -17,8 +17,8 @@ class Navecita extends FlxSprite
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
 		super(X, Y);		
-		loadGraphic(AssetPaths.navejugador__png);
-		setGraphicSize(32, 32);
+		loadGraphic(AssetPaths.player1__png);
+		setGraphicSize(15, 14);
 		b.kill();
 	}
 	
@@ -26,27 +26,25 @@ class Navecita extends FlxSprite
 	{
 		super.update(elapsed);		
 		
-		Movimiento();		
+		Movimiento(elapsed);		
 		if (FlxG.keys.justPressed.J)
 		{
 			Disparar();
 		}
 	}
-	public function Movimiento()
+	public function Movimiento(elapsed:Float)
 	{
 		if (FlxG.keys.pressed.D)
-		x += 3;
+		x += 90*elapsed;
 		
 		if (FlxG.keys.pressed.A)
-		x -= 3;
+		x -= 90*elapsed;
 		
 		RestringirMovimiento();		
 	}
 	//PARA QUE PLAYER NO SE MUEVA MAS ALLA DE LA PANTALLA
 	public function RestringirMovimiento()
 	{
-		
-		
 		if(x > FlxG.width - width)	 
 			x = FlxG.width - width; 
 			
@@ -58,7 +56,7 @@ class Navecita extends FlxSprite
 	{
 		if (!b.alive)
 		{			
-			b.reset(x + width / 2, y + height / 16);
+			b.reset(x + width / 2-b.width/2, y + height / 16);
 			FlxG.state.add(b);		
 		}
 	}
