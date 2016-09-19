@@ -2,6 +2,7 @@ package clases;
 
 import flash.display.Bitmap;
 import flash.display.BitmapData;
+import flash.display.Graphics;
 import flash.utils.ByteArray;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -21,9 +22,16 @@ class Shield extends FlxSprite
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
 		super(X, Y);
-		makeGraphic (100, 100);
-		
+		loadGraphic(AssetPaths.shield__png,false,true);
+		//makeGraphic (16, 10);
 		//graphic.bitmap.setPixel(0, 0, 0);
+	}
+	public function ResetGraphic()
+	{
+		//graphic.bitmap.fillRect(new Rectangle(0, 0, 16, 10), 0xFFAAFFAA);	
+		
+		loadGraphic(AssetPaths.shield__png,false,true);
+		dirty = true;
 	}
 	public function CollidePoint(point:FlxPoint):Bool
 	{
@@ -53,12 +61,20 @@ class Shield extends FlxSprite
 				hitY = graphic.height-1;
 			}
 				
-			var bit:BitmapData = FlxG.bitmap.create(15, 15, 0x00000000, false).bitmap;			
-			CopyBitmapManually(bit, hitX - Math.floor(bit.width/2), Math.floor(hitY-bit.height/2));			
+			//var bit:BitmapData = FlxG.bitmap.create(5, 5, 0x00000000, false).bitmap;	
+			//CopyBitmapManually(bit, hitX - Math.floor(bit.width/2), Math.floor(hitY-bit.height/2));
+			var bit:BitmapData = FlxG.bitmap.add(AssetPaths.bulletMask1__png).bitmap;
+			Mask(bit, hitX - Math.floor(bit.width / 2), Math.floor(hitY - bit.height / 2));		
+			
 			return true;
 		}else{
 			return false;
 		}
+	}
+	public function DropPixel(X:Float,Y:Float,Color:Int)
+	{
+		var roguePixel:RoguePixel = new RoguePixel( X, Y, Color);
+		FlxG.state.add(roguePixel);
 	}
 	
 	public function CollidePoints(points:Array<FlxPoint>):Bool
@@ -84,5 +100,20 @@ class Shield extends FlxSprite
 		graphic.bitmap.unlock();
 		dirty = true;
 	}
-	
+	public function Mask(bit:BitmapData, offsetX:Int, offsetY:Int)
+	{
+		graphic.bitmap.lock();
+		for (i in 0...bit.width)
+		{
+			for (j in 0...bit.height)
+			{
+				if (bit.getPixel32(i, j) == 0xFF000000){
+					DropPixel(i + offsetX+x, j + offsetY+y, graphic.bitmap.getPixel32(i + offsetX, j + offsetY));					
+					graphic.bitmap.setPixel32(i + offsetX, j + offsetY, 0x00000000);		
+				}
+			}			
+		}		
+		graphic.bitmap.unlock();
+		dirty = true;
+	}
 }
