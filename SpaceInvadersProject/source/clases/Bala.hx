@@ -15,14 +15,22 @@ import flixel.math.FlxPoint;
  */
 class Bala extends FlxSprite
 {
+	public var waiting(default, null):Bool = false;
 	private var selfDestroy:Bool;
 	private var vy:Float;
 	private var prevPositionY:Float;
-	public function new(?X:Float=0, ?Y:Float=0,?SelfDestroy:Bool=false, ?Velocity:Int=-500) 
+	
+	
+	public function setWaiting(value:Bool){
+		waiting = value;
+		visible = !value;
+	}
+	
+	public function new(?X:Float=0, ?Y:Float=0,?SelfDestroy:Bool=false, ?Velocity:Int=-120) 
 	{
 		super(X, Y);
 		
-		makeGraphic (4, 8);
+		loadGraphic(AssetPaths.bullet1__png);
 		color = FlxColor.WHITE;
 		vy = Velocity;
 		prevPositionY = y;
@@ -35,13 +43,20 @@ class Bala extends FlxSprite
 	}
 	override public function update(elapsed:Float):Void
 	{
-		super.update(elapsed);
-		prevPositionY = y;
-		y += vy*elapsed;
-		if (StageTools.FueraDePantalla(getPosition()))
+		if (!waiting)
 		{
-			explode();
-		}		
+			super.update(elapsed);
+			prevPositionY = y;
+			y += vy*elapsed;
+			if (StageTools.FueraDePantalla(getPosition()))
+			{
+				explode();
+			}	
+		}
+	}
+	public function getCorrectedPosition():FlxPoint
+	{		
+		return new FlxPoint(x + width / 2, y + height / 2);
 	}
 	public function pointsDuringFrame():Array<FlxPoint>
 	{
@@ -56,7 +71,7 @@ class Bala extends FlxSprite
 			}
 			for (i in from...to)
 			{
-				points.push(new FlxPoint(x,i));
+				points.push(new FlxPoint(x+width/2,i+height/2));
 			}
 		}else{
 			points.push(getPosition());			
@@ -67,10 +82,10 @@ class Bala extends FlxSprite
 	public function explode()
 	{
 		if (selfDestroy) {
-				trace("BOOM");
+				//trace("BOOM");
 				destroy();
 			}else {
-				trace("ded x.X");
+				//trace("ded x.X");
 				kill();
 			}
 	}
@@ -91,7 +106,7 @@ class Bala extends FlxSprite
 	}
 	public function overlapsPointExpanded(point:FlxPoint):Bool
 	{		
-		if (point.x > x - 10 && point.x < x + 10 && point.y < y + 10 && point.y > y - 10) 
+		if (point.x > x + width/2 - 5 && point.x < x + width/2 + 5 && point.y < y + height/2 + 5 && point.y > y + height/2 - 5) 
 		{
 			return true;
 		}
