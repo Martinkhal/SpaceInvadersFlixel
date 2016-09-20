@@ -11,29 +11,40 @@ import flixel.math.FlxPoint;
 class Enjambre
 {
 	private var enemigos: FlxGroup = new FlxGroup(); 
-	var enjambreWidth:Int = 11;
-	var enjambreHeight:Int = 6;
+	var enjambreWidth:Int = 7;
+	var enjambreHeight:Int = 4;
 	
 	public var currentMovingEnemy:Int;
 	
-	public var stageLeft:Float = 80;
-	public var stageRight:Float = 550;
-	
+	public var stageLeft:Float = 8;
+	public var stageRight:Float = 140;
+	public var active = false;
 	private var player:Navecita;
-	private var escudo:Shield;
-	public function new(Player:Navecita,Escudo:Shield) 
+	private var escudo:Array<Shield> = [];
+	public function new(Player:Navecita,Escudos:Array<Shield>) 
 	{		
 		player = Player;
-		escudo = Escudo;
+		escudo = Escudos;
 		var e:Enemigo;			
 		for (i in 0...enjambreWidth)
 		{
 			for (j in 0...enjambreHeight)
 			{
-				e = new Enemigo(80 + i*40, 30+ j*35);				
+				var enemyType:Int = 2;
+				if (j > 0)
+				{
+					enemyType = 1;
+				}
+				if (j > 1)
+				{
+					enemyType = 0;
+				}
+				e = new Enemigo(enemyType);				
+				
 				enemigos.add(e);
 			}
 		}	
+		ResetPosition();
 		currentMovingEnemy = 1;
 		//trace(cast(enemigos.members[currentMovingEnemy-1], Enemigo).alive);
 	}	
@@ -41,21 +52,16 @@ class Enjambre
 	{
 		return (enemigos.countLiving() == 0);
 	}
-	public function Move(movement:FlxPoint):Bool
+	
+	public function celebrate()
 	{
-		var endOfCicle:Bool = false;	
-		if (enemigos.length>0)
-		{			
-			while (!cast(enemigos.members[FromBottomLeft(currentMovingEnemy)], Enemigo).alive)
-			{
-				endOfCicle = nextIndex(currentMovingEnemy) || endOfCicle;
-			}
-			
-			cast(enemigos.members[FromBottomLeft(currentMovingEnemy)], Enemigo).move(movement);
-			endOfCicle = nextIndex(currentMovingEnemy) || endOfCicle;
-		}
-		return endOfCicle;
+		for (i in 0...enjambreWidth*enjambreHeight)
+		{
+			cast(enemigos.members[i], Enemigo).celebrate();
+			active = false;
+		}		
 	}
+	
 	public function nextIndex(index:Int):Bool{
 		var endOfCicle:Bool = false;	
 		currentMovingEnemy++;
@@ -148,7 +154,9 @@ class Enjambre
 		{
 			for (j in 0...enjambreHeight)
 			{
-				(cast(enemigos.members[index], Enemigo)).setPosition(80 + i * 40, 30 + j * 35);
+				(cast(enemigos.members[index], Enemigo)).restAnimation();	
+				(cast(enemigos.members[index], Enemigo)).restFrame = 0;
+				(cast(enemigos.members[index], Enemigo)).setPosition(stageLeft + i*15, 20+ j*15);	
 				index++;
 			}
 		}
@@ -179,11 +187,11 @@ class Enjambre
 			if (!BalasEnemigas[i].exists)
 			{
 				BalasEnemigas.splice(i, 1);
-				trace("Removed: "+i);
+				//trace("Removed: "+i);
 			}
 			i--;
 		}
-		trace(BalasEnemigas.length);		
+		//trace(BalasEnemigas.length);		
 	}
 
 	public function deleteAllBullets()
@@ -199,17 +207,20 @@ class Enjambre
 	}
 	public function fireRandom():Bala
 	{			
-		var a:Array<Enemigo> = AliveArray();
-		return (cast(a[Math.floor(Math.random() * (enemigos.countLiving()))], Enemigo)).Disparar();		
+		var alive:Array<Enemigo> = AliveArray();
+		var chosenToShoot:Int = Math.floor(Math.random() * (enemigos.countLiving()));		
+		var bullet:Bala = cast(alive[chosenToShoot], Enemigo).Disparar(Math.random()>0.4);
+		return (bullet);
+		
 	}
 	
-	private var currentMovement:FlxPoint = new FlxPoint(15,0);
-	private var movementH:Float = 15;
-	private var movementV:Float = 30;
-	
+	private var currentMovement:FlxPoint = new FlxPoint(8,0);
+	private var movementH:Float = 8;
+	private var movementV:Float = 5;	
 	public function StartMove() {
-		if (Move(currentMovement))
-		{			
+		var completedCycle:Bool = Move(currentMovement);
+		if (completedCycle)
+		{
 			var dir:Int = checkWall();
 			if (dir != 0)
 			{
@@ -219,21 +230,39 @@ class Enjambre
 			}					
 		}
 	}
+	public function Move(movement:FlxPoint):Bool
+	{
+		var endOfCicle:Bool = false;	
+		if (enemigos.length>0)
+		{			
+			while (!cast(enemigos.members[FromBottomLeft(currentMovingEnemy)], Enemigo).alive)
+			{
+				endOfCicle = nextIndex(currentMovingEnemy) || endOfCicle;
+			}			
+			cast(enemigos.members[FromBottomLeft(currentMovingEnemy)], Enemigo).move(movement);
+			endOfCicle = nextIndex(currentMovingEnemy) || endOfCicle;
+		}
+		return endOfCicle;
+	}
+	
 	private var MoveTimer:Float = 0;
 	private var FireTimer:Float = 0;
 	public function Update(elapsed:Float) {
-		MoveTimer += elapsed;		
-		if (MoveTimer >= 0.05)
+		if (active)
 		{
-			StartMove();				
-			MoveTimer = 0;
-		}
-		FireTimer -= elapsed;		
-		if (FireTimer <= 0)
-		{							
-			fire();			
-			FireTimer = 0.4 + Math.random() * 0.5;
-		}
+			MoveTimer += elapsed;		
+			if (MoveTimer >= 0.1)
+			{
+				StartMove();				
+				MoveTimer = 0;
+			}
+			FireTimer -= elapsed;		
+			if (FireTimer <= 0)
+			{							
+				fire();			
+				FireTimer = 0.8 + Math.random() * 0.8;
+			}
+		}		
 		//CollideBulletsWithPlayer();
 	}
 	public function CollideBulletsWithPlayer():Bool {
@@ -241,7 +270,7 @@ class Enjambre
 		while (i >= 0) {
 			if (BalasEnemigas[i].exists)
 			{
-				if (player.CollidePoint(BalasEnemigas[i].getPosition()))
+				if (player.CollidePoint(BalasEnemigas[i].getCorrectedPosition()))
 				{
 					return true;
 				}
@@ -257,7 +286,7 @@ class Enjambre
 			while (i >= 0) {
 				if (BalasEnemigas[i].exists)
 				{				
-					if (BalasEnemigas[i].CollidePoint(player.b.getPosition()))
+					if (BalasEnemigas[i].CollidePoint(player.b.getCorrectedPosition()))
 					{
 						player.b.explode();
 						return true;
@@ -274,10 +303,13 @@ class Enjambre
 		while (i >= 0) {
 			if (BalasEnemigas[i].exists)
 			{
-				if (escudo.CollidePoints(BalasEnemigas[i].pointsDuringFrame()))
+				for (j in 0...escudo.length)
 				{
-					BalasEnemigas[i].explode();
-					return true;
+					if (escudo[j].CollidePoints(BalasEnemigas[i].pointsDuringFrame()))
+					{
+						BalasEnemigas[i].explode();
+						return true;
+					}
 				}
 			}
 			i--;
