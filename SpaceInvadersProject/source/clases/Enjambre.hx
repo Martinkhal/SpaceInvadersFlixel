@@ -61,21 +61,7 @@ class Enjambre
 			active = false;
 		}		
 	}
-	
-	public function nextIndex(index:Int):Bool{
-		var endOfCicle:Bool = false;	
-		currentMovingEnemy++;
-		if (currentMovingEnemy > enjambreHeight * enjambreWidth)
-		{
-			endOfCicle = true;
-			currentMovingEnemy = 1;
-		}
-		if (currentMovingEnemy < 1){
-			endOfCicle = true;
-			currentMovingEnemy = 1;
-		}
-		return endOfCicle;
-	}
+
 	
 	public function FromBottomLeft(index:Int):Int
 	{		
@@ -217,6 +203,7 @@ class Enjambre
 	private var currentMovement:FlxPoint = new FlxPoint(8,0);
 	private var movementH:Float = 8;
 	private var movementV:Float = 5;	
+	
 	public function StartMove() {
 		var completedCycle:Bool = Move(currentMovement);
 		if (completedCycle)
@@ -224,9 +211,9 @@ class Enjambre
 			var dir:Int = checkWall();
 			if (dir != 0)
 			{
-				currentMovement = new FlxPoint(movementH * dir,movementV);
+				currentMovement = new FlxPoint(movementH * dir, movementV);
 			}else{
-				currentMovement =  new FlxPoint(currentMovement.x,0);
+				currentMovement =  new FlxPoint(currentMovement.x,1);
 			}					
 		}
 	}
@@ -243,6 +230,36 @@ class Enjambre
 			endOfCicle = nextIndex(currentMovingEnemy) || endOfCicle;
 		}
 		return endOfCicle;
+	}
+	
+	public function isLastAliveIndex(index:Int):Bool{
+		var endOfCicle:Bool = false;	
+		index++;
+		if (index > enjambreHeight * enjambreWidth)
+		{
+			endOfCicle = true;
+			index = 1;
+		}
+		if (index < 1){
+			endOfCicle = true;
+			index = 1;
+		}
+		return endOfCicle;
+	}
+	
+	public function nextIndex(index:Int):Bool{
+		var endOfCicle:Bool = false;	
+		currentMovingEnemy++;
+		if (currentMovingEnemy > enjambreHeight * enjambreWidth)
+		{
+			endOfCicle = true;
+			currentMovingEnemy = 1;
+		}
+		if (currentMovingEnemy < 1){
+			endOfCicle = true;
+			currentMovingEnemy = 1;
+		}
+		return isLastAliveIndex(currentMovingEnemy);
 	}
 	
 	private var MoveTimer:Float = 0;
