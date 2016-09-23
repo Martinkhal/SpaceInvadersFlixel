@@ -69,7 +69,7 @@ class PlayState extends FlxState
 		ufo = new UFO(1,1,player);
 		add(ufo);
 		
-		FlxG.sound.playMusic(AssetPaths.music1__wav); //para reproducir musica, recordar subir la musica en la carpeta music en formato WAV
+		
 	}	
 	var waitingForRespawn:Bool = true;
 	

@@ -26,6 +26,8 @@ class MenuState extends FlxState
 		add(MenuSign);
 		var Alien:NewUFO = new NewUFO(50, 50);		
 		add(Alien);
+		
+		FlxG.sound.playMusic(AssetPaths.music1__wav, 0.5); //para reproducir musica, recordar subir la musica en la carpeta music en formato WAV
 	}
 
 	override public function update(elapsed:Float):Void
