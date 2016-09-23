@@ -12,19 +12,19 @@ import clases.Bala;
 class Enemigo extends FlxSprite
 {	
 	public var restFrame:Int = 0;
-	var enemyType:String;
+	var enemyType:Int;
 	public function celebrate()
 	{
-		animation.play("celebrate1-"+enemyType);
+		animation.play("celebrate1-"+Std.string(enemyType));
 	}
 	public function restAnimation()
 	{
-		animation.play("resting0-"+enemyType);
+		animation.play("resting0-"+Std.string(enemyType));
 	}
 	public function new(EnemyType:Int) 
 	{
 		super(0, 0);	
-		enemyType = Std.string(EnemyType);
+		enemyType = EnemyType;
 			
 		//PARA CREAR ENEMIGO/imagen
 		loadGraphic(AssetPaths.Enemy2__png, true, 12, 14); 
@@ -48,26 +48,24 @@ class Enemigo extends FlxSprite
 	private function switchRestFrame()
 	{
 		restFrame = 1 - restFrame;
-		if (animation.curAnim == null || animation.curAnim.name != "fire-"+enemyType)
+		if (animation.curAnim == null || animation.curAnim.name != "fire-"+Std.string(enemyType))
 		{
-			animation.play("resting"+restFrame+"-"+enemyType);
+			animation.play("resting"+restFrame+"-"+Std.string(enemyType));
 		}		
 	}
 	
 	override public function update (elapsed:Float):Void
 	{
 		super.update(elapsed);	
-		if (chargedShot != null && chargedShot.exists)
+		if (chargedShot != null && chargedShot.exists && chargedShot.waiting)
 		{
-			if (chargedShot.waiting){
-				chargedShot.setPosition(x + width / 2, y + height);	
-				if (Math.abs(x - FlxG.player.x) < 10)
-				{
-					animation.play("fire-"+enemyType);
+			chargedShot.setPosition(x + width / 2, y + height);	
+			if (Math.abs(x - StageTools.player.x) < 10)
+			{
+					animation.play("fire-"+Std.string(enemyType));
 					animation.finishCallback = Anim;
 					chargedShot.setWaiting(false);
-				}
-			}			
+			}	
 		}
 	}
 	
@@ -93,7 +91,13 @@ class Enemigo extends FlxSprite
 	}
 	public function die()
 	{
-		FlxG.score += 100;
+		StageTools.scorre += (enemyType+1)*100;
+		FlxG.sound.play(AssetPaths.explode1__wav, 0.5);	
+		var p:Points = new Points(x+width/2, y+height/2, (enemyType+1)*100);		
+		if (chargedShot != null && chargedShot.exists && chargedShot.waiting)
+		{
+			chargedShot.destroy();
+		}
 		kill();
 	}
 	var chargedShot:Bala;
@@ -115,7 +119,7 @@ class Enemigo extends FlxSprite
 		}else{
 			var b:Bala = new Bala(x + width / 2, y + height , true, 100); 		
 			FlxG.state.add(b);		
-			animation.play("fire-"+enemyType);
+			animation.play("fire-"+Std.string(enemyType));
 			animation.finishCallback = Anim;
 			return b;
 		}
@@ -123,7 +127,7 @@ class Enemigo extends FlxSprite
 	}
 	private function Anim(name:String)
 	{
-		animation.play("resting"+restFrame+"-"+enemyType);
+		animation.play("resting"+restFrame+"-"+Std.string(enemyType));
 	}
 	
 }

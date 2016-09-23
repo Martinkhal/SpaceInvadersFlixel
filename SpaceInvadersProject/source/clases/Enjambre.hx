@@ -1,8 +1,11 @@
 package clases;
+import flash.display.InteractiveObject;
+import flash.geom.Point;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
+import flixel.system.debug.completion.CompletionList;
 
 /**
  * ...
@@ -14,47 +17,88 @@ class Enjambre
 	var enjambreWidth:Int = 7;
 	var enjambreHeight:Int = 4;
 	
-	public var currentMovingEnemy:Int;
 	
 	public var stageLeft:Float = 8;
 	public var stageRight:Float = 140;
 	public var active = false;
 	private var player:Navecita;
 	private var escudo:Array<Shield> = [];
+	public var percentComplete:Float = 0;
+	
 	public function new(Player:Navecita,Escudos:Array<Shield>) 
 	{		
+		FlxG.watch.add(this, "timeCompleted");
+		FlxG.watch.add(this, "timeToComplete");
 		player = Player;
 		escudo = Escudos;
-		var e:Enemigo;			
-		for (i in 0...enjambreWidth)
+		CreateEnemies();
+		ResetPosition();
+	}
+	
+	public function Update(elapsed:Float) {
+		timeToComplete = 0.05 * enemigos.countLiving();
+		timeCompleted += elapsed;
+		
+		if (Erradicated())
 		{
-			for (j in 0...enjambreHeight)
+			
+		}else{
+			if (active)
 			{
-				var enemyType:Int = 2;
-				if (j > 0)
+				handleMovement(elapsed);
+				handleShooting(elapsed);
+			}		
+		}		
+	}
+	
+	//Intialization
+	public function CreateEnemies()
+	{
+		var e:Enemigo;			
+		for (i in 0...enjambreHeight)
+		{
+			for (j in 0...enjambreWidth)
+			{
+				var enemyType:Int = 0;
+				if (i > 1)
 				{
 					enemyType = 1;
 				}
-				if (j > 1)
+				if (i > 2)
 				{
-					enemyType = 0;
+					enemyType = 2;
 				}
 				e = new Enemigo(enemyType);				
 				
 				enemigos.add(e);
 			}
 		}	
-		ResetPosition();
-		currentMovingEnemy = 1;
-		//trace(cast(enemigos.members[currentMovingEnemy-1], Enemigo).alive);
+	}
+	public function add()
+	{		
+		FlxG.state.add(enemigos);
 	}	
-	public function Erradicated():Bool
+	public function ResetPosition()
 	{
-		return (enemigos.countLiving() == 0);
+		var index:Int = 0;			
+		for (i in 0...enjambreHeight)
+		{
+			for (j in 0...enjambreWidth)
+			{
+				(cast(enemigos.members[index], Enemigo)).restAnimation();	
+				(cast(enemigos.members[index], Enemigo)).restFrame = 0;
+				(cast(enemigos.members[index], Enemigo)).setPosition(stageLeft+20 + j * 15, 60 - i*15);	
+				index++;
+			}
+		}
+		EnemyMovementIndex = 0;
+		deleteAllBullets();
 	}
 	
-	public function celebrate()
-	{
+	
+	
+	
+	public function celebrate(){
 		for (i in 0...enjambreWidth*enjambreHeight)
 		{
 			cast(enemigos.members[i], Enemigo).celebrate();
@@ -63,110 +107,22 @@ class Enjambre
 	}
 
 	
-	public function FromBottomLeft(index:Int):Int
-	{		
-		var x:Int = ((index-1) % enjambreWidth) +1;
-		var y:Int = Math.ceil(index / enjambreWidth);
-		
-		//trace("Index:" + index + ", x:" + x + ", y:" + y + ", Value:" + ((x * enjambreHeight) - y));
-		return ((x * enjambreHeight) - y);
-	}
 	
-	public function add()
-	{		
-		FlxG.state.add(enemigos);
-	}
 	
-	public function checkWall():Int
-	{
-		var rightMost:Int = RightMostIndex();
-		var leftMost:Int = LeftMostIndex();
-		trace("Right: " +(cast(enemigos.members[rightMost], Enemigo).getPosition()));
-		trace("Left: " +(cast(enemigos.members[leftMost], Enemigo).getPosition()));
-		if ((cast(enemigos.members[rightMost], Enemigo).getPosition().x) > stageRight)
-		{
-			return -1;
-		}
+	//Movement	
+	var EnemyMovementIndex:Int = 0;
+	var EnemyMovementDir:Int = 1;
+	var EnemyMovementH:Int = 8;
+	var EnemyMovementV:FlxPoint = new FlxPoint(8,0);
 	
-		if ((cast(enemigos.members[leftMost], Enemigo).getPosition().x) < stageLeft)
-		{
-			return 1;
-		}
-		return 0;
-	}
 	
-	public function RightMostIndex():Int
-	{
-		var rightMost:Int = 0;
-		for (i in 0...enjambreWidth*enjambreHeight)
-		{
-			if (enemigos.members[i].alive)
-			{
-				rightMost = i;				
-			}
-		}
-		return rightMost;
-	}
 	
-	public function LeftMostIndex():Int
-	{
-		for (i in 0...enjambreWidth*enjambreHeight)
-		{
-			if (enemigos.members[i].alive)
-			{
-				return i;
-			}
-		}
-		return 0;
-	}	
-
 	
-	public function CollidePoint(point:FlxPoint):Bool
-	{
-		for (i in 0...enjambreHeight*enjambreWidth)
-		{
-			if (cast(enemigos.members[i], Enemigo).CollidePoint(point))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
 	
-	public function ResetPosition()
-	{
-		var index:Int = 0;			
-		for (i in 0...enjambreWidth)
-		{
-			for (j in 0...enjambreHeight)
-			{
-				(cast(enemigos.members[index], Enemigo)).restAnimation();	
-				(cast(enemigos.members[index], Enemigo)).restFrame = 0;
-				(cast(enemigos.members[index], Enemigo)).setPosition(stageLeft + i*15, 20+ j*15);	
-				index++;
-			}
-		}
-		currentMovingEnemy = 1;
-		deleteAllBullets();
-	}
-	
-	public function AliveArray():Array<Enemigo>
-	{
-		var a:Array<Enemigo> = [];
-		
-		for(i in 0...enemigos.length) 
-		{
-			if (enemigos.members[i].alive) {
-					a.push(cast(enemigos.members[i], Enemigo));
-			}
-		}
-		return a;
-	}
+	//Bullets
 	
 	private var BalasEnemigas:Array<Bala> = [];
-	
-	public function fire()
-	{
+	public function fire(){
 		BalasEnemigas.push(fireRandom());		
 		var i:Int = BalasEnemigas.length-1;
 		while (i >= 0) {
@@ -179,9 +135,7 @@ class Enjambre
 		}
 		//trace(BalasEnemigas.length);		
 	}
-
-	public function deleteAllBullets()
-	{		
+	public function deleteAllBullets(){		
 		var l:Int = BalasEnemigas.length;
 		for (i in 0...l) {
 			if (BalasEnemigas[i].exists)
@@ -191,97 +145,134 @@ class Enjambre
 		}
 		BalasEnemigas = [];
 	}
-	public function fireRandom():Bala
-	{			
+	public function fireRandom():Bala{			
 		var alive:Array<Enemigo> = AliveArray();
 		var chosenToShoot:Int = Math.floor(Math.random() * (enemigos.countLiving()));		
 		var bullet:Bala = cast(alive[chosenToShoot], Enemigo).Disparar(Math.random()>0.4);
-		return (bullet);
+		return (bullet);		
+	}
+	
+	//Enjambre's members sorting functions
+	public function Erradicated():Bool{
+		return (enemigos.countLiving() == 0);
+	}
+	public function IndexOf(index:Int):Enemigo{
+		return((cast(enemigos.members[index], Enemigo)));
+	}
+	public function AliveArray():Array<Enemigo>{
+		var a:Array<Enemigo> = [];
 		
-	}
-	
-	private var currentMovement:FlxPoint = new FlxPoint(8,0);
-	private var movementH:Float = 8;
-	private var movementV:Float = 5;	
-	
-	public function StartMove() {
-		var completedCycle:Bool = Move(currentMovement);
-		if (completedCycle)
+		for(i in 0...enemigos.length) 
 		{
-			var dir:Int = checkWall();
-			if (dir != 0)
+			if (enemigos.members[i].alive) {
+					a.push(cast(enemigos.members[i], Enemigo));
+			}
+		}
+		return a;
+	}
+	public function RightMostIndex():Float{
+		var c:Int = enjambreWidth-1;
+		while (c >= 0)
+		{
+			for (r in 0...enjambreHeight)
 			{
-				currentMovement = new FlxPoint(movementH * dir, movementV);
-			}else{
-				currentMovement =  new FlxPoint(currentMovement.x,1);
-			}					
+				if (IndexOf(r*enjambreWidth+c).alive)
+				{
+					return IndexOf(r*enjambreWidth+c).x;				
+				}
+			}
+			c--;
 		}
+		return 0;
 	}
-	public function Move(movement:FlxPoint):Bool
-	{
-		var endOfCicle:Bool = false;	
-		if (enemigos.length>0)
-		{			
-			while (!cast(enemigos.members[FromBottomLeft(currentMovingEnemy)], Enemigo).alive)
+	public function LeftMostIndex():Float{		
+		var c:Int = enjambreWidth - 1;
+		for (c in 0...enjambreWidth)
+		{	
+			var r:Int = 0;
+			for (r in 0...enjambreHeight)
 			{
-				endOfCicle = nextIndex(currentMovingEnemy) || endOfCicle;
-			}			
-			cast(enemigos.members[FromBottomLeft(currentMovingEnemy)], Enemigo).move(movement);
-			endOfCicle = nextIndex(currentMovingEnemy) || endOfCicle;
-		}
-		return endOfCicle;
-	}
-	
-	public function isLastAliveIndex(index:Int):Bool{
-		var endOfCicle:Bool = false;	
-		index++;
-		if (index > enjambreHeight * enjambreWidth)
+				if (IndexOf(r*enjambreWidth+c).alive)
+				{
+					return IndexOf(r*enjambreWidth+c).x;				
+				}
+			}
+		}	
+		return 0;
+	}	
+	public function isColumnAlive(index:Int):Bool{
+		for (i in 0...enjambreHeight)
 		{
-			endOfCicle = true;
-			index = 1;
+			if (IndexOf(i*enjambreWidth+index).alive)
+			{
+				return true;				
+			}
 		}
-		if (index < 1){
-			endOfCicle = true;
-			index = 1;
-		}
-		return endOfCicle;
+		return false;
 	}
 	
-	public function nextIndex(index:Int):Bool{
-		var endOfCicle:Bool = false;	
-		currentMovingEnemy++;
-		if (currentMovingEnemy > enjambreHeight * enjambreWidth)
-		{
-			endOfCicle = true;
-			currentMovingEnemy = 1;
-		}
-		if (currentMovingEnemy < 1){
-			endOfCicle = true;
-			currentMovingEnemy = 1;
-		}
-		return isLastAliveIndex(currentMovingEnemy);
-	}
 	
+	var moveTime:Float = 0.05;
+	var shootTime:Float = 0.8;
+	var shotTimeRandom:Float = 0.8;
+
 	private var MoveTimer:Float = 0;
 	private var FireTimer:Float = 0;
-	public function Update(elapsed:Float) {
-		if (active)
+	
+	var timeToComplete:Float = 0;
+	var timeCompleted:Float = 0;
+		
+	
+	public function handleMovement(elapsed:Float){
+		MoveTimer += elapsed;		
+		if (MoveTimer >= moveTime)
 		{
-			MoveTimer += elapsed;		
-			if (MoveTimer >= 0.1)
-			{
-				StartMove();				
-				MoveTimer = 0;
-			}
-			FireTimer -= elapsed;		
-			if (FireTimer <= 0)
-			{							
-				fire();			
-				FireTimer = 0.8 + Math.random() * 0.8;
-			}
-		}		
-		//CollideBulletsWithPlayer();
+			Move();			
+			MoveTimer = 0;
+		}
 	}
+	public function handleShooting(elapsed:Float){
+		FireTimer -= elapsed;		
+				if (FireTimer <= 0)
+				{							
+					fire();			
+					FireTimer = shootTime + Math.random() * shotTimeRandom - shotTimeRandom / 2;
+				}
+	}
+	
+	public var music:EnjambreMusic = new EnjambreMusic();
+	
+	public function Move(){
+		while (EnemyMovementIndex < (enjambreHeight * enjambreWidth)-1 && !IndexOf(EnemyMovementIndex).alive)
+		{
+			EnemyMovementIndex++;
+		}
+		IndexOf(EnemyMovementIndex).move(EnemyMovementV);
+		
+		EnemyMovementIndex++;
+		
+		while (EnemyMovementIndex < enjambreHeight * enjambreWidth && !IndexOf(EnemyMovementIndex).alive)
+		{
+			EnemyMovementIndex++;
+		}	
+		
+		if (EnemyMovementIndex >= enjambreHeight * enjambreWidth)
+		{
+			music.play();
+			music.setTimeUnit(timeToComplete);
+			timeCompleted = 0;
+			EnemyMovementIndex = 0;
+			var wall:Int = checkWall();
+			if (wall != 0){
+				EnemyMovementV.x = EnemyMovementH * wall;
+				EnemyMovementV.y = 5;
+			}else{
+				EnemyMovementV.y = 0;
+			}
+		}
+	}
+	
+	//Collision
 	public function CollideBulletsWithPlayer():Bool {
 		var i:Int = BalasEnemigas.length-1;
 		while (i >= 0) {
@@ -296,7 +287,6 @@ class Enjambre
 		}
 		return false;
 	}
-	
 	public function CollideBulletsWithPlayerBullet():Bool {		
 		if (player.b.alive){
 			var i:Int = BalasEnemigas.length - 1;
@@ -304,7 +294,7 @@ class Enjambre
 				if (BalasEnemigas[i].exists)
 				{				
 					if (BalasEnemigas[i].CollidePoint(player.b.getCorrectedPosition()))
-					{
+					{						
 						player.b.explode();
 						return true;
 					}
@@ -314,7 +304,6 @@ class Enjambre
 		}		
 		return false;
 	}
-	
 	public function CollideBulletsWithShield():Bool {
 		var i:Int = BalasEnemigas.length-1;
 		while (i >= 0) {
@@ -332,5 +321,26 @@ class Enjambre
 			i--;
 		}
 		return false;
+	}
+	public function CollidePoint(point:FlxPoint):Bool{
+		for (i in 0...enjambreHeight*enjambreWidth)
+		{
+			if (cast(enemigos.members[i], Enemigo).CollidePoint(point))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	public function checkWall():Int{	
+		if (RightMostIndex() > stageRight)
+		{
+			return -1;
+		}
+		if (LeftMostIndex() < stageLeft)
+		{
+			return 1;
+		}
+		return 0;
 	}
 }

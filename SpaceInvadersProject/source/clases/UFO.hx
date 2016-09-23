@@ -14,18 +14,19 @@ class UFO extends FlxSprite
 	public function new(?X:Float=0, ?Y:Float=0, Player:Navecita) 
 	{
 		super(X, Y);		
-		loadGraphic(AssetPaths.UFO__png, true, 17, 15);		
+		loadGraphic(AssetPaths.UFO__png, true, 19, 15);		
 		animation.add("moving", [0, 1], 12,true);		
 		animation.play("moving");
-		setGraphicSize(17, 15);
+		
 		set_visible(false);
 		player = Player;
 	}
 	
 	public var spawnCooldown:Float = 0;
-	public var spawnTime:Float = 10  ;
+	public var spawnTime:Float = 10  ;	
 	override public function update(elapsed:Float):Void 
 	{	
+		super.update(elapsed);
 		if (!visible)
 		{
 			
@@ -71,6 +72,9 @@ class UFO extends FlxSprite
 	}
 	public function die()
 	{
+		FlxG.sound.play(AssetPaths.yes2__wav, 0.5);	
+		StageTools.scorre += 500;
+		var p:Points = new Points(x+width/2, y+height/2, 500);
 		spawnCooldown = spawnTime;	
 		set_visible(false);			
 	}

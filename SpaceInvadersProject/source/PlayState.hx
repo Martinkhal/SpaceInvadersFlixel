@@ -2,16 +2,20 @@ package;
 
 import clases.Digitalizer;
 import clases.Enjambre;
+import clases.Points;
 import clases.ScrollingBackground;
 import clases.Shield;
+import clases.StageTools;
 import clases.UFO;
 import flixel.FlxG;
+import flixel.FlxGame;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
-import flixel.system.scaleModes.PixelPerfectScaleMode;
+import flixel.system.FlxAssets.FlxSoundAsset;
+
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.math.FlxMath;
@@ -27,24 +31,24 @@ class PlayState extends FlxState
 	private var ufo:UFO;
 	private var escudos:Array<Shield> = [];
 	
-	var background:FlxSprite = new FlxSprite();
-	var background2:FlxSprite = new FlxSprite();
 	var b:ScrollingBackground;
 	var score:Digitalizer;
+	var livesDigits:Digitalizer;
+	
 	override public function create():Void
 	{		
-		super.create();
+		super.create();		
+		StageTools.scorre = 0;
 		//FlxG.fullscreen = !FlxG.fullscreen;
-		FlxG.resizeWindow(FlxG.initialWidth * 3, FlxG.initialHeight * 3);
-
-		FlxG.scaleMode = new PixelPerfectScaleMode();
+		
+		
 		b = new ScrollingBackground(AssetPaths.bg1__png); 
-		add(b);
-		//background.loadGraphic(AssetPaths.bg1__png); 
-		//background2.loadGraphic(AssetPaths.bg1__png); 
-		//background.makeGraphic(FlxG.width, FlxG.height, 0xFF081214);
-		//add(background);
-		//add(background2);
+		add(b);		
+		
+		var scoreSign:FlxSprite = new FlxSprite(15,1,AssetPaths.ScoreSign__png);
+		add(scoreSign);
+		var livesSign:FlxSprite = new FlxSprite(100,1,AssetPaths.LivesSign__png);
+		add(livesSign);
 		
 		var escudo1:Shield = new Shield(30, 104);		
 		add(escudo1);
@@ -54,29 +58,55 @@ class PlayState extends FlxState
 		escudos.push(escudo2);
 		
 		player = new Navecita(50, 124); //posicion donde aparece NAVE del jugador
+		player.enabled = false;
 		add(player);		
-		FlxG.player = player;
-		
+		StageTools.player =  player;
 		enjambre = new Enjambre(player,escudos);
 		enjambre.add();
 		
-		score = new Digitalizer(10, 2,FlxG.score);
-		
-		ufo = new UFO(player);
+		score = new Digitalizer(37, 1,6,StageTools.scorre);
+		livesDigits = new Digitalizer(125, 1,2,lives);
+		ufo = new UFO(1,1,player);
 		add(ufo);
 	}	
 	var waitingForRespawn:Bool = true;
 	
-	
+	var lives:Int = 3;
+	public function killPlayer()
+	{
+		player.kill();
+		lives --;
+		livesDigits.update(lives);
+		FlxG.sound.play(AssetPaths.explode0__wav, 0.5);	
+	}
+	public var RespawnCooldown:Float = 0.3;
+	public var RespawnTime:Float = 0.3;
 	override public function update(elapsed:Float):Void
 	{		
 		super.update(elapsed);	
-		if (waitingForRespawn && FlxG.keys.anyJustPressed([FlxKey.A,FlxKey.D,FlxKey.J]))
+		
+		if (waitingForRespawn){
+			RespawnCooldown -= elapsed;
+		}else{
+			RespawnCooldown = RespawnTime;
+		}
+		if (waitingForRespawn && RespawnCooldown<= 0 && FlxG.keys.anyJustPressed([FlxKey.A,FlxKey.D,FlxKey.J]))
 		{
-			player.revive();
-			enjambre.ResetPosition();
-			enjambre.active = true;
-			waitingForRespawn = false;
+			if (lives > 0)
+			{
+				player.enabled = true;
+				player.revive();
+				enjambre.ResetPosition();
+				enjambre.active = true;
+				waitingForRespawn = false;
+			}else{
+				if (StageTools.scorre > StageTools.Highscorre)
+				{
+					StageTools.Highscorre = StageTools.scorre;				
+				}
+				FlxG.switchState(new GameOverState());
+			}	
+			
 		}
 		
 		
@@ -96,7 +126,7 @@ class PlayState extends FlxState
 			//Player vs Enemigos
 			if (player.alive && enjambre.CollidePoint(player.getPosition()))
 			{
-				player.kill();
+				killPlayer();
 				waitingForRespawn = true;
 				enjambre.celebrate();				
 			}
@@ -106,7 +136,7 @@ class PlayState extends FlxState
 			{				
 				enjambre.celebrate();	
 				waitingForRespawn = true;
-				player.kill();
+				killPlayer();
 			}
 			
 			//Balas de enemigos vs Bala de player
@@ -131,9 +161,13 @@ class PlayState extends FlxState
 				}
 			}
 		}else{
-			FlxG.switchState(new MenuState());
+			if (StageTools.scorre > StageTools.Highscorre)
+			{
+				StageTools.Highscorre = StageTools.scorre;				
+			}
+			FlxG.switchState(new GameOverState());
 		}
-		score.update(FlxG.score);
+		score.update(StageTools.scorre);
 		
 		//score.digitalize(score);
 		//enemigos.colisionarConBala(player.b.getPosition());	

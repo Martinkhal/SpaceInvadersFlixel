@@ -19,10 +19,11 @@ class Digitalizer
 	var x:Int = 0;
 	var y:Int = 0;
 	private var number:Int = 0;
-	public function new(X:Int,Y:Int,?Number:Int=0) 
+	public function new(X:Int,Y:Int,MaxDigits:Int=3,?Number:Int=0) 
 	{
 		x = X;
 		y = Y;
+		maxDigits = MaxDigits;
 		loadAssets();		
 		createSprites();
 		digitalize(Number);

@@ -83,9 +83,13 @@ class Bala extends FlxSprite
 	{
 		if (selfDestroy) {
 				//trace("BOOM");
+				FlxG.sound.play(AssetPaths.explode1__wav, 0.5);	
+				var e:LittleExplosion = new LittleExplosion(x+width/2, y+width/2);
 				destroy();
 			}else {
 				//trace("ded x.X");
+				FlxG.sound.play(AssetPaths.explode1__wav, 0.5);	
+				var e:LittleExplosion = new LittleExplosion(x+width/2, y+width/2);
 				kill();
 			}
 	}
@@ -106,7 +110,7 @@ class Bala extends FlxSprite
 	}
 	public function overlapsPointExpanded(point:FlxPoint):Bool
 	{		
-		if (point.x > x + width/2 - 5 && point.x < x + width/2 + 5 && point.y < y + height/2 + 5 && point.y > y + height/2 - 5) 
+		if (point.x > x + width/2 - 2 && point.x < x + width/2 + 2 && point.y < y + height/2 + 2 && point.y > y + height/2 - 2) 
 		{
 			return true;
 		}

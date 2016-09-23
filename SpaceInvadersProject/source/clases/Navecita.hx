@@ -13,9 +13,10 @@ class Navecita extends FlxSprite
 {
 
 	public var b:Bala = new Bala(); 
-	
+	public var enabled:Bool = true;
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
+		
 		super(X, Y);		
 		loadGraphic(AssetPaths.player1__png);
 		setGraphicSize(15, 14);
@@ -25,11 +26,12 @@ class Navecita extends FlxSprite
 	override public function update (elapsed:Float):Void
 	{
 		super.update(elapsed);		
-		
-		Movimiento(elapsed);		
-		if (FlxG.keys.justPressed.J)
-		{
-			Disparar();
+		if(enabled){
+			Movimiento(elapsed);		
+			if (FlxG.keys.justPressed.J)
+			{
+				Disparar();
+			}
 		}
 	}
 	public function Movimiento(elapsed:Float)
@@ -53,9 +55,10 @@ class Navecita extends FlxSprite
 	}
 	
 	public function Disparar()
-	{
+	{		
 		if (!b.alive)
 		{			
+			FlxG.sound.play(AssetPaths.shoot0__wav, 0.5);	
 			b.reset(x + width / 2-b.width/2, y + height / 16);
 			FlxG.state.add(b);		
 		}
@@ -75,5 +78,11 @@ class Navecita extends FlxSprite
 		}else{
 			return false;
 		}
+	}
+	override public function kill():Void 
+	{
+		super.kill();
+		var e:Points = new Points(x+width/2, y+height/2, true);	
+		enabled = false;
 	}
 }

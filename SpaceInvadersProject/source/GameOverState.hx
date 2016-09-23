@@ -1,36 +1,33 @@
 package;
 
-import clases.NewUFO;
+import clases.Digitalizer;
 import clases.ScrollingBackground;
+import clases.StageTools;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.input.keyboard.FlxKey;
-import flixel.text.FlxText;
-import flixel.ui.FlxButton;
-import flixel.math.FlxMath;
-import PlayState;
-import flixel.system.scaleModes.PixelPerfectScaleMode;
-class MenuState extends FlxState
+/**
+ * ...
+ * @author ...
+ */
+class GameOverState extends FlxState
 {
+	var score:Digitalizer;
 	var b:ScrollingBackground;
 	override public function create():Void
 	{
 		super.create();
-		FlxG.resizeWindow(FlxG.initialWidth * 3, FlxG.initialHeight * 3);
-		FlxG.scaleMode = new PixelPerfectScaleMode();
-		
 		b = new ScrollingBackground(AssetPaths.bg1__png); 
+		b.speed = -3;
 		add(b);		
-		var MenuSign:FlxSprite = new FlxSprite(0,0,AssetPaths.bg0__png);
-		add(MenuSign);
-		var Alien:NewUFO = new NewUFO(50, 50);		
-		add(Alien);
+		var scoreSign:FlxSprite = new FlxSprite(30,20,AssetPaths.HighScoresSign__png);
+		add(scoreSign);
+		score = new Digitalizer(59, 50, 6, StageTools.Highscorre);
+		
 	}
-
 	override public function update(elapsed:Float):Void
 	{		
-		
 		super.update(elapsed);		
 		if (FlxG.keys.anyJustPressed([FlxKey.A,FlxKey.D,FlxKey.J]))
 		{
