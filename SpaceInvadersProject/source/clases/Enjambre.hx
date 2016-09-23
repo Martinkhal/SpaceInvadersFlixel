@@ -27,8 +27,6 @@ class Enjambre
 	
 	public function new(Player:Navecita,Escudos:Array<Shield>) 
 	{		
-		FlxG.watch.add(this, "timeCompleted");
-		FlxG.watch.add(this, "timeToComplete");
 		player = Player;
 		escudo = Escudos;
 		CreateEnemies();
@@ -41,6 +39,7 @@ class Enjambre
 		
 		if (Erradicated())
 		{
+			
 			
 		}else{
 			if (active)
@@ -95,8 +94,32 @@ class Enjambre
 		deleteAllBullets();
 	}
 	
-	
-	
+	public function AnyoneBelowFloorLevel():Bool
+	{
+		var index:Int = 0;			
+		for (i in 0...enjambreHeight)
+		{
+			for (j in 0...enjambreWidth)
+			{
+				if ((cast(enemigos.members[index], Enemigo)).y > FlxG.height -20)
+				return true;
+				index++;
+			}
+		}
+		return false;
+	}
+	public function Respawn()
+	{
+		var index:Int = 0;			
+		for (i in 0...enjambreHeight)
+		{
+			for (j in 0...enjambreWidth)
+			{
+				(cast(enemigos.members[index], Enemigo)).revive();
+				index++;
+			}
+		}
+	}
 	
 	public function celebrate(){
 		for (i in 0...enjambreWidth*enjambreHeight)
@@ -265,7 +288,7 @@ class Enjambre
 			var wall:Int = checkWall();
 			if (wall != 0){
 				EnemyMovementV.x = EnemyMovementH * wall;
-				EnemyMovementV.y = 5;
+				EnemyMovementV.y = 12;
 			}else{
 				EnemyMovementV.y = 0;
 			}

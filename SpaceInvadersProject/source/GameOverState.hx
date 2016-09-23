@@ -1,5 +1,4 @@
 package;
-
 import clases.Digitalizer;
 import clases.ScrollingBackground;
 import clases.StageTools;
@@ -23,7 +22,7 @@ class GameOverState extends FlxState
 		add(b);		
 		var scoreSign:FlxSprite = new FlxSprite(30,20,AssetPaths.HighScoresSign__png);
 		add(scoreSign);
-		score = new Digitalizer(59, 50, 6, StageTools.Highscorre);
+		score = new Digitalizer(59, 50, 6, StageTools.highscore);
 		
 	}
 	override public function update(elapsed:Float):Void

@@ -18,7 +18,7 @@ class StageTools
 	}
 	public static var gameScale:Int = 1;
 	public static var player:FlxObject;
-	public static var scorre:Int = 0;
-	public static var Highscorre:Int = 0;
+	public static var score:Int = 0;
+	public static var highscore:Int = 0;
 	public static var newHighScore:Bool = false;
 }

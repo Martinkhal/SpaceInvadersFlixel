@@ -38,7 +38,7 @@ class PlayState extends FlxState
 	override public function create():Void
 	{		
 		super.create();		
-		StageTools.scorre = 0;
+		StageTools.score = 0;
 		//FlxG.fullscreen = !FlxG.fullscreen;
 		
 		
@@ -64,7 +64,7 @@ class PlayState extends FlxState
 		enjambre = new Enjambre(player,escudos);
 		enjambre.add();
 		
-		score = new Digitalizer(37, 1,6,StageTools.scorre);
+		score = new Digitalizer(37, 1,6,StageTools.score);
 		livesDigits = new Digitalizer(125, 1,2,lives);
 		ufo = new UFO(1,1,player);
 		add(ufo);
@@ -100,9 +100,9 @@ class PlayState extends FlxState
 				enjambre.active = true;
 				waitingForRespawn = false;
 			}else{
-				if (StageTools.scorre > StageTools.Highscorre)
+				if (StageTools.score > StageTools.highscore)
 				{
-					StageTools.Highscorre = StageTools.scorre;				
+					StageTools.highscore = StageTools.score;				
 				}
 				FlxG.switchState(new GameOverState());
 			}	
@@ -110,10 +110,17 @@ class PlayState extends FlxState
 		}
 		
 		
-		if (!enjambre.Erradicated()) {
-			
+		if (!enjambre.Erradicated()) {			
 			enjambre.Update(elapsed);	
 			
+			
+			//Enemigos debajo del limite
+			if(enjambre.AnyoneBelowFloorLevel()){
+				enjambre.celebrate();	
+				waitingForRespawn = true;
+				killPlayer();
+				enjambre.ResetPosition();
+			}
 			//Balas de enemigos vs Escudo
 			enjambre.CollideBulletsWithShield();
 			
@@ -161,13 +168,15 @@ class PlayState extends FlxState
 				}
 			}
 		}else{
-			if (StageTools.scorre > StageTools.Highscorre)
+			if (StageTools.score > StageTools.highscore)
 			{
-				StageTools.Highscorre = StageTools.scorre;				
+				StageTools.highscore = StageTools.score;				
 			}
-			FlxG.switchState(new GameOverState());
+			enjambre.ResetPosition(); 
+			enjambre.Respawn();
+			//FlxG.switchState(new GameOverState());
 		}
-		score.update(StageTools.scorre);
+		score.update(StageTools.score);
 		
 		//score.digitalize(score);
 		//enemigos.colisionarConBala(player.b.getPosition());	

@@ -73,7 +73,7 @@ class UFO extends FlxSprite
 	public function die()
 	{
 		FlxG.sound.play(AssetPaths.yes2__wav, 0.5);	
-		StageTools.scorre += 500;
+		StageTools.score += 500;
 		var p:Points = new Points(x+width/2, y+height/2, 500);
 		spawnCooldown = spawnTime;	
 		set_visible(false);			
