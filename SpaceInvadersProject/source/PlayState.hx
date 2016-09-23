@@ -79,7 +79,7 @@ class PlayState extends FlxState
 		player.kill();
 		lives --;
 		livesDigits.update(lives);
-		FlxG.sound.play(AssetPaths.explode0__wav, 0.5);	
+		FlxG.sound.play(AssetPaths.explode0__ogg, 0.5);	
 	}
 	public var RespawnCooldown:Float = 0.3;
 	public var RespawnTime:Float = 0.3;

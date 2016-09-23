@@ -58,7 +58,7 @@ class Navecita extends FlxSprite
 	{		
 		if (!b.alive)
 		{			
-			FlxG.sound.play(AssetPaths.shoot0__wav, 0.5);	
+			FlxG.sound.play(AssetPaths.shoot0__ogg, 0.5);	
 			b.reset(x + width / 2-b.width/2, y + height / 16);
 			FlxG.state.add(b);		
 		}

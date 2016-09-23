@@ -83,12 +83,12 @@ class Bala extends FlxSprite
 	{
 		if (selfDestroy) {
 				//trace("BOOM");
-				FlxG.sound.play(AssetPaths.explode1__wav, 0.5);	
+				FlxG.sound.play(AssetPaths.explode1__ogg, 0.5);	
 				var e:LittleExplosion = new LittleExplosion(x+width/2, y+width/2);
 				destroy();
 			}else {
 				//trace("ded x.X");
-				FlxG.sound.play(AssetPaths.explode1__wav, 0.5);	
+				FlxG.sound.play(AssetPaths.explode1__ogg, 0.5);	
 				var e:LittleExplosion = new LittleExplosion(x+width/2, y+width/2);
 				kill();
 			}

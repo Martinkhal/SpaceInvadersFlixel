@@ -92,7 +92,7 @@ class Enemigo extends FlxSprite
 	public function die()
 	{
 		StageTools.score += (enemyType+1)*100;
-		FlxG.sound.play(AssetPaths.explode1__wav, 0.5);	
+		FlxG.sound.play(AssetPaths.explode1__ogg, 0.5);	
 		var p:Points = new Points(x+width/2, y+height/2, (enemyType+1)*100);		
 		if (chargedShot != null && chargedShot.exists && chargedShot.waiting)
 		{

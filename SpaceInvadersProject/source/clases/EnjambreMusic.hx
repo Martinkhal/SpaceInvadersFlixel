@@ -21,40 +21,40 @@ class EnjambreMusic extends FlxObject
 		
 	}
 	function loadNotes(){		
-		notes.push(new DelayedNote(AssetPaths.M1__wav, 0));
+		notes.push(new DelayedNote(AssetPaths.M1__ogg, 0));
 		noteCount.push(1);
 		
-		notes.push(new DelayedNote(AssetPaths.M2__wav,0));
+		notes.push(new DelayedNote(AssetPaths.M2__ogg,0));
 		noteCount.push(1);
 		
-		notes.push(new DelayedNote(AssetPaths.M3__wav, 0));
+		notes.push(new DelayedNote(AssetPaths.M3__ogg, 0));
 		noteCount.push(1);
 		
-		notes.push(new DelayedNote(AssetPaths.M4__wav,0));
+		notes.push(new DelayedNote(AssetPaths.M4__ogg,0));
 		noteCount.push(1);
 		
-		notes.push(new DelayedNote(AssetPaths.M1__wav, 0));
-		notes.push(new DelayedNote(AssetPaths.Ma__wav, 0));
+		notes.push(new DelayedNote(AssetPaths.M1__ogg, 0));
+		notes.push(new DelayedNote(AssetPaths.Ma__ogg, 0));
 		noteCount.push(2);
 		
-		notes.push(new DelayedNote(AssetPaths.M2__wav, 0));
-		notes.push(new DelayedNote(AssetPaths.Ma__wav, 0));
-		notes.push(new DelayedNote(AssetPaths.Mb__wav, 0));
+		notes.push(new DelayedNote(AssetPaths.M2__ogg, 0));
+		notes.push(new DelayedNote(AssetPaths.Ma__ogg, 0));
+		notes.push(new DelayedNote(AssetPaths.Mb__ogg, 0));
 		noteCount.push(3);
 		
-		notes.push(new DelayedNote(AssetPaths.M3__wav, 0));
-		notes.push(new DelayedNote(AssetPaths.Ma2__wav, 0));
-		notes.push(new DelayedNote(AssetPaths.Mb__wav, 0));
+		notes.push(new DelayedNote(AssetPaths.M3__ogg, 0));
+		notes.push(new DelayedNote(AssetPaths.Ma2__ogg, 0));
+		notes.push(new DelayedNote(AssetPaths.Mb__ogg, 0));
 		
-		notes.push(new DelayedNote(AssetPaths.Ma2__wav, 0.25));
+		notes.push(new DelayedNote(AssetPaths.Ma2__ogg, 0.25));
 		
-		notes.push(new DelayedNote(AssetPaths.Ma2__wav, 0.5));
-		notes.push(new DelayedNote(AssetPaths.Mb__wav, 0.5));
+		notes.push(new DelayedNote(AssetPaths.Ma2__ogg, 0.5));
+		notes.push(new DelayedNote(AssetPaths.Mb__ogg, 0.5));
 		noteCount.push(6);
 		
-		notes.push(new DelayedNote(AssetPaths.M4__wav, 0));
-		notes.push(new DelayedNote(AssetPaths.Ma__wav, 0));
-		notes.push(new DelayedNote(AssetPaths.Mb__wav, 0));
+		notes.push(new DelayedNote(AssetPaths.M4__ogg, 0));
+		notes.push(new DelayedNote(AssetPaths.Ma__ogg, 0));
+		notes.push(new DelayedNote(AssetPaths.Mb__ogg, 0));
 		noteCount.push(3);
 		/*
 		notes.push(new DelayedNote(AssetPaths.SpaceInvadersMusic1_5__wav,0));

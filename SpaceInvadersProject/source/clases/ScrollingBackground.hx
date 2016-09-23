@@ -32,15 +32,6 @@ class ScrollingBackground extends FlxObject
 		stageY += elapsed * speed;
 		background.y = stageY % FlxG.height;
 		backgroundUp.y = stageY % FlxG.height - FlxG.height;
-		backgroundDown.y = stageY % FlxG.height + FlxG.height;
-		if (FlxG.keys.pressed.W)
-		{
-			speed ++;
-		}
-		
-		if (FlxG.keys.pressed.S)
-		{
-			speed --;
-		}
+		backgroundDown.y = stageY % FlxG.height + FlxG.height;		
 	}
 }
